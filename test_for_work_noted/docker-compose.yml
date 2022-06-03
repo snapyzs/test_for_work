@@ -1,0 +1,39 @@
+version: "3.9"
+
+networks:
+  bridge:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+services:
+  postgres:
+    image: postgres:13.3
+    networks:
+      bridge:
+        ipv4_address: 172.20.0.5
+    command:
+      - "postgres"
+      - "-c"
+      - "listen_addresses=172.20.0.5"
+    ports:
+      - "5432:5432" 
+    environment:
+      POSTGRES_DB: "notedata"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+  server:
+    depends_on:
+      - postgres
+    networks:
+      bridge:
+        ipv4_address: 172.20.0.6
+    build: ./
+    command: bash -c 'sleep 5; node server.js'
+    ports:
+      - "5001:5001"
+    environment:
+      DB_HOST: 172.20.0.5
+    
+    
+    

@@ -1,0 +1,30 @@
+version: "3.9"
+
+networks:
+  bridge:
+    ipam:
+      config:
+        - subnet: 172.23.0.0/24
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.10-management
+    networks:
+      bridge:
+        ipv4_address: 172.23.0.5
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  server:
+    depends_on:
+      - rabbitmq
+    networks:
+      bridge:
+        ipv4_address: 172.23.0.6
+    build: ./
+    command: bash -c 'sleep 5; node server.js'
+    ports:
+      - "5002:5002"
+    
+    
+    
